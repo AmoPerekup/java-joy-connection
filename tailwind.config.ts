@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,17 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				coffee: {
+					100: '#F6EDE4',
+					200: '#E8D5C0',
+					300: '#D3B48C',
+					400: '#A67C52',
+					500: '#7D5A3C',
+					600: '#5E4430',
+					700: '#3C2E20',
+					800: '#291F16',
+					900: '#17100B',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -70,26 +82,51 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'fade-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				'fade-out': {
+					from: { opacity: '1' },
+					to: { opacity: '0' }
+				},
+				'slide-in': {
+					from: { transform: 'translateY(10px)', opacity: '0' },
+					to: { transform: 'translateY(0)', opacity: '1' }
+				},
+				'slide-out': {
+					from: { transform: 'translateY(0)', opacity: '1' },
+					to: { transform: 'translateY(10px)', opacity: '0' }
+				},
+				shimmer: {
+					'100%': {
+						transform: 'translateX(100%)',
 					},
-					to: {
-						height: '0'
-					}
-				}
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'fade-out': 'fade-out 0.3s ease-out',
+				'slide-in': 'slide-in 0.3s ease-out',
+				'slide-out': 'slide-out 0.3s ease-out',
+				shimmer: 'shimmer 2s infinite',
+			},
+			fontFamily: {
+				sans: ['Inter var', 'Inter', 'sans-serif'],
+			},
+			boxShadow: {
+				subtle: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+				glass: '0 4px 24px rgba(0, 0, 0, 0.06), 0 8px 12px rgba(0, 0, 0, 0.02)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
