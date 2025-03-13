@@ -125,7 +125,7 @@ const SUPPLIERS = [
       { id: 'SO-010', date: '2023-09-01', total: '$250.00', status: 'delivered' },
       { id: 'SO-011', date: '2023-08-18', total: '$300.00', status: 'delivered' },
     ],
-    notes: 'Offers seasonal flavors with 2 weeks' advance notice.'
+    notes: 'Offers seasonal flavors with 2 weeks\' advance notice.'
   }
 ];
 
