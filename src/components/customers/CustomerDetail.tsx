@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Define the proper type for loyalty tier
+type LoyaltyTier = 'bronze' | 'silver' | 'gold' | 'platinum';
+
 // Mock data - with expanded data for loyalty and birthdays
 const CUSTOMERS = [
   {
@@ -45,7 +48,7 @@ const CUSTOMERS = [
     notes: 'Prefers to be served by Maria. Sensitive to caffeine in the afternoon.',
     birthday: '1985-04-15',
     loyaltyPoints: 320,
-    loyaltyTier: 'gold',
+    loyaltyTier: 'gold' as LoyaltyTier,
     cashbackPercentage: 5,
     paymentMethods: [
       { type: 'Visa', last4: '4242', expiryDate: '06/25', isDefault: true },
@@ -71,7 +74,7 @@ const CUSTOMERS = [
     notes: 'Always brings his laptop to work. Often stays for 3+ hours.',
     birthday: '1990-10-22',
     loyaltyPoints: 85,
-    loyaltyTier: 'bronze',
+    loyaltyTier: 'bronze' as LoyaltyTier,
     cashbackPercentage: 2,
     paymentMethods: [
       { type: 'Mastercard', last4: '5678', expiryDate: '09/24', isDefault: true },
@@ -98,7 +101,7 @@ const CUSTOMERS = [
     notes: 'Celebrates birthday on October 15. Mentioned she likes our seasonal pumpkin spice items.',
     birthday: '1988-10-15',
     loyaltyPoints: 430,
-    loyaltyTier: 'platinum',
+    loyaltyTier: 'platinum' as LoyaltyTier,
     cashbackPercentage: 8,
     paymentMethods: [
       { type: 'Amex', last4: '1234', expiryDate: '12/26', isDefault: true },
@@ -124,7 +127,7 @@ const CUSTOMERS = [
     notes: 'Usually in a rush. Prefers quick service.',
     birthday: null,
     loyaltyPoints: 45,
-    loyaltyTier: 'bronze',
+    loyaltyTier: 'bronze' as LoyaltyTier,
     cashbackPercentage: 1,
     paymentMethods: [
       { type: 'Cash', isDefault: true },
@@ -150,7 +153,7 @@ const CUSTOMERS = [
     notes: 'Has a loyalty card. Very friendly with staff.',
     birthday: '1992-05-30',
     loyaltyPoints: 160,
-    loyaltyTier: 'silver',
+    loyaltyTier: 'silver' as LoyaltyTier,
     cashbackPercentage: 3,
     paymentMethods: [
       { type: 'Mastercard', last4: '2468', expiryDate: '11/25', isDefault: true },
@@ -366,3 +369,4 @@ const CustomerDetail = () => {
 };
 
 export default CustomerDetail;
+
