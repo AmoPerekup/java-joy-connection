@@ -9,6 +9,10 @@ import AddSupplierForm from '@/components/suppliers/AddSupplierForm';
 const Suppliers = () => {
   const [addSupplierOpen, setAddSupplierOpen] = useState(false);
   
+  const handleAddSupplier = () => {
+    setAddSupplierOpen(true);
+  };
+  
   return (
     <PageLayout>
       <div className="space-y-8">
@@ -17,12 +21,12 @@ const Suppliers = () => {
             <h1 className="text-3xl font-bold tracking-tight mb-2">Suppliers</h1>
             <p className="text-muted-foreground">Manage your coffee shop suppliers.</p>
           </div>
-          <Button onClick={() => setAddSupplierOpen(true)}>
+          <Button onClick={handleAddSupplier}>
             <Plus className="mr-2 h-4 w-4" /> Add Supplier
           </Button>
         </div>
         
-        <SupplierList />
+        <SupplierList onAddSupplier={handleAddSupplier} />
         
         <AddSupplierForm
           open={addSupplierOpen}

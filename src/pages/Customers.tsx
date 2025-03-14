@@ -9,6 +9,10 @@ import AddCustomerForm from '@/components/customers/AddCustomerForm';
 const Customers = () => {
   const [addCustomerOpen, setAddCustomerOpen] = useState(false);
   
+  const handleAddCustomer = () => {
+    setAddCustomerOpen(true);
+  };
+  
   return (
     <PageLayout>
       <div className="space-y-8">
@@ -17,12 +21,12 @@ const Customers = () => {
             <h1 className="text-3xl font-bold tracking-tight mb-2">Customers</h1>
             <p className="text-muted-foreground">Manage your coffee shop customers and their preferences.</p>
           </div>
-          <Button onClick={() => setAddCustomerOpen(true)}>
+          <Button onClick={handleAddCustomer}>
             <Plus className="mr-2 h-4 w-4" /> Add Customer
           </Button>
         </div>
         
-        <CustomerList />
+        <CustomerList onAddCustomer={handleAddCustomer} />
         
         <AddCustomerForm
           open={addCustomerOpen}

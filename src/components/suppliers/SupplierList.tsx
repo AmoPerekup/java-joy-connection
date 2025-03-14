@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -79,7 +78,11 @@ const SUPPLIERS = [
   }
 ];
 
-const SupplierList = () => {
+type SupplierListProps = {
+  onAddSupplier?: () => void;
+};
+
+const SupplierList = ({ onAddSupplier }: SupplierListProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
@@ -110,7 +113,7 @@ const SupplierList = () => {
             <CardTitle className="text-xl font-semibold">Suppliers</CardTitle>
             <CardDescription>Manage your suppliers and orders.</CardDescription>
           </div>
-          <Button className="sm:w-auto">
+          <Button className="sm:w-auto" onClick={onAddSupplier}>
             <Plus className="mr-2 h-4 w-4" /> Add Supplier
           </Button>
         </div>
