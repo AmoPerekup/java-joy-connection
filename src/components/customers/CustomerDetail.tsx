@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import CustomerProductPreferences from './CustomerProductPreferences';
+import LoyaltyProgram from './LoyaltyProgram';
+import BirthdayManager from './BirthdayManager';
 import { 
   Coffee, 
   Phone, 
@@ -20,7 +22,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Mock data
+// Mock data - with expanded data for loyalty and birthdays
 const CUSTOMERS = [
   {
     id: 1,
@@ -40,7 +42,15 @@ const CUSTOMERS = [
       { id: 2, name: 'Cappuccino', category: 'drinks' },
       { id: 6, name: 'Cheesecake', category: 'desserts' }
     ],
-    notes: 'Prefers to be served by Maria. Sensitive to caffeine in the afternoon.'
+    notes: 'Prefers to be served by Maria. Sensitive to caffeine in the afternoon.',
+    birthday: '1985-04-15',
+    loyaltyPoints: 320,
+    loyaltyTier: 'gold',
+    cashbackPercentage: 5,
+    paymentMethods: [
+      { type: 'Visa', last4: '4242', expiryDate: '06/25', isDefault: true },
+      { type: 'Cash' }
+    ]
   },
   {
     id: 2,
@@ -58,7 +68,14 @@ const CUSTOMERS = [
     favoriteProducts: [
       { id: 4, name: 'Americano', category: 'drinks' }
     ],
-    notes: 'Always brings his laptop to work. Often stays for 3+ hours.'
+    notes: 'Always brings his laptop to work. Often stays for 3+ hours.',
+    birthday: '1990-10-22',
+    loyaltyPoints: 85,
+    loyaltyTier: 'bronze',
+    cashbackPercentage: 2,
+    paymentMethods: [
+      { type: 'Mastercard', last4: '5678', expiryDate: '09/24', isDefault: true },
+    ]
   },
   {
     id: 3,
@@ -78,7 +95,15 @@ const CUSTOMERS = [
       { id: 3, name: 'Latte', category: 'drinks' },
       { id: 9, name: 'Granola Bar', category: 'snacks' }
     ],
-    notes: 'Celebrates birthday on October 15. Mentioned she likes our seasonal pumpkin spice items.'
+    notes: 'Celebrates birthday on October 15. Mentioned she likes our seasonal pumpkin spice items.',
+    birthday: '1988-10-15',
+    loyaltyPoints: 430,
+    loyaltyTier: 'platinum',
+    cashbackPercentage: 8,
+    paymentMethods: [
+      { type: 'Amex', last4: '1234', expiryDate: '12/26', isDefault: true },
+      { type: 'Visa', last4: '9876', expiryDate: '03/25', isDefault: false },
+    ]
   },
   {
     id: 4,
@@ -96,7 +121,14 @@ const CUSTOMERS = [
     favoriteProducts: [
       { id: 1, name: 'Espresso', category: 'drinks' }
     ],
-    notes: 'Usually in a rush. Prefers quick service.'
+    notes: 'Usually in a rush. Prefers quick service.',
+    birthday: null,
+    loyaltyPoints: 45,
+    loyaltyTier: 'bronze',
+    cashbackPercentage: 1,
+    paymentMethods: [
+      { type: 'Cash', isDefault: true },
+    ]
   },
   {
     id: 5,
@@ -115,13 +147,21 @@ const CUSTOMERS = [
       { id: 5, name: 'Chocolate Cake', category: 'desserts' },
       { id: 10, name: 'Fruit Cup', category: 'snacks' }
     ],
-    notes: 'Has a loyalty card. Very friendly with staff.'
+    notes: 'Has a loyalty card. Very friendly with staff.',
+    birthday: '1992-05-30',
+    loyaltyPoints: 160,
+    loyaltyTier: 'silver',
+    cashbackPercentage: 3,
+    paymentMethods: [
+      { type: 'Mastercard', last4: '2468', expiryDate: '11/25', isDefault: true },
+    ]
   }
 ];
 
 const CustomerDetail = () => {
   const { id } = useParams<{ id: string }>();
   const customerId = parseInt(id || '0');
+  const [activeTab, setActiveTab] = useState("orders");
   
   const customer = CUSTOMERS.find(c => c.id === customerId);
   
@@ -240,10 +280,12 @@ const CustomerDetail = () => {
         </Card>
 
         <div className="lg:col-span-2">
-          <Tabs defaultValue="orders">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4 bg-muted/50">
               <TabsTrigger value="orders" className="data-[state=active]:bg-white">Orders</TabsTrigger>
               <TabsTrigger value="products" className="data-[state=active]:bg-white">Products</TabsTrigger>
+              <TabsTrigger value="loyalty" className="data-[state=active]:bg-white">Loyalty</TabsTrigger>
+              <TabsTrigger value="birthday" className="data-[state=active]:bg-white">Birthday</TabsTrigger>
               <TabsTrigger value="notes" className="data-[state=active]:bg-white">Notes</TabsTrigger>
             </TabsList>
             
@@ -282,6 +324,25 @@ const CustomerDetail = () => {
               <CustomerProductPreferences 
                 customerId={customer.id}
                 initialPreferences={customer.favoriteProducts}
+              />
+            </TabsContent>
+            
+            <TabsContent value="loyalty" className="mt-0">
+              <LoyaltyProgram
+                customerId={customer.id}
+                points={customer.loyaltyPoints}
+                tier={customer.loyaltyTier}
+                cashbackPercentage={customer.cashbackPercentage}
+                paymentMethods={customer.paymentMethods}
+              />
+            </TabsContent>
+            
+            <TabsContent value="birthday" className="mt-0">
+              <BirthdayManager
+                customerId={customer.id}
+                customerName={customer.name}
+                birthdate={customer.birthday}
+                email={customer.email}
               />
             </TabsContent>
             
