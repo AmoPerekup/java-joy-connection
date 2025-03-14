@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import CustomerProductPreferences from './CustomerProductPreferences';
 import { 
   Coffee, 
   Phone, 
@@ -35,6 +36,10 @@ const CUSTOMERS = [
       { id: 'ORD-002', date: '2023-09-08', total: '$8.50', status: 'complete' },
       { id: 'ORD-003', date: '2023-08-30', total: '$15.75', status: 'complete' },
     ],
+    favoriteProducts: [
+      { id: 2, name: 'Cappuccino', category: 'drinks' },
+      { id: 6, name: 'Cheesecake', category: 'desserts' }
+    ],
     notes: 'Prefers to be served by Maria. Sensitive to caffeine in the afternoon.'
   },
   {
@@ -49,6 +54,9 @@ const CUSTOMERS = [
     orders: [
       { id: 'ORD-004', date: '2023-09-10', total: '$4.50', status: 'complete' },
       { id: 'ORD-005', date: '2023-09-03', total: '$9.25', status: 'complete' },
+    ],
+    favoriteProducts: [
+      { id: 4, name: 'Americano', category: 'drinks' }
     ],
     notes: 'Always brings his laptop to work. Often stays for 3+ hours.'
   },
@@ -66,6 +74,10 @@ const CUSTOMERS = [
       { id: 'ORD-007', date: '2023-09-05', total: '$11.25', status: 'complete' },
       { id: 'ORD-008', date: '2023-08-29', total: '$14.75', status: 'complete' },
     ],
+    favoriteProducts: [
+      { id: 3, name: 'Latte', category: 'drinks' },
+      { id: 9, name: 'Granola Bar', category: 'snacks' }
+    ],
     notes: 'Celebrates birthday on October 15. Mentioned she likes our seasonal pumpkin spice items.'
   },
   {
@@ -81,6 +93,9 @@ const CUSTOMERS = [
       { id: 'ORD-009', date: '2023-08-30', total: '$3.75', status: 'complete' },
       { id: 'ORD-010', date: '2023-08-23', total: '$3.75', status: 'complete' },
     ],
+    favoriteProducts: [
+      { id: 1, name: 'Espresso', category: 'drinks' }
+    ],
     notes: 'Usually in a rush. Prefers quick service.'
   },
   {
@@ -95,6 +110,10 @@ const CUSTOMERS = [
     orders: [
       { id: 'ORD-011', date: '2023-09-08', total: '$5.50', status: 'complete' },
       { id: 'ORD-012', date: '2023-09-01', total: '$13.25', status: 'complete' },
+    ],
+    favoriteProducts: [
+      { id: 5, name: 'Chocolate Cake', category: 'desserts' },
+      { id: 10, name: 'Fruit Cup', category: 'snacks' }
     ],
     notes: 'Has a loyalty card. Very friendly with staff.'
   }
@@ -224,6 +243,7 @@ const CustomerDetail = () => {
           <Tabs defaultValue="orders">
             <TabsList className="mb-4 bg-muted/50">
               <TabsTrigger value="orders" className="data-[state=active]:bg-white">Orders</TabsTrigger>
+              <TabsTrigger value="products" className="data-[state=active]:bg-white">Products</TabsTrigger>
               <TabsTrigger value="notes" className="data-[state=active]:bg-white">Notes</TabsTrigger>
             </TabsList>
             
@@ -256,6 +276,13 @@ const CustomerDetail = () => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="products" className="mt-0">
+              <CustomerProductPreferences 
+                customerId={customer.id}
+                initialPreferences={customer.favoriteProducts}
+              />
             </TabsContent>
             
             <TabsContent value="notes" className="mt-0">

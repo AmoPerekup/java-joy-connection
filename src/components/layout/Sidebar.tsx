@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Coffee, Users, Truck, ShoppingCart, FileText } from 'lucide-react';
+import { Coffee, Users, Truck, ShoppingCart, FileText, Utensils } from 'lucide-react';
 
 const Sidebar = () => {
   return (
@@ -17,6 +17,7 @@ const Sidebar = () => {
             <NavItem to="/customers" icon={<Users className="h-4 w-4" />} label="Customers" />
             <NavItem to="/suppliers" icon={<Truck className="h-4 w-4" />} label="Suppliers" />
             <NavItem to="/orders" icon={<ShoppingCart className="h-4 w-4" />} label="Orders" />
+            <NavItem to="/menu" icon={<Utensils className="h-4 w-4" />} label="Menu" />
             <NavItem to="/utilities" icon={<FileText className="h-4 w-4" />} label="Utilities" />
           </nav>
         </div>
