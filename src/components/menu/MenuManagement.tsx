@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,19 +25,17 @@ const MenuManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: menuItems = [], isLoading } = useQuery({
+  const { data: menuItemsData = [], isLoading } = useQuery({
     queryKey: ['menuItems'],
-    queryFn: getAllMenuItems,
-    select: (data) => {
-      // Transform the flat array into categories
-      const categorized = {
-        drinks: data.filter(item => item.category === 'drinks'),
-        desserts: data.filter(item => item.category === 'desserts'),
-        snacks: data.filter(item => item.category === 'snacks')
-      };
-      return categorized;
-    }
+    queryFn: getAllMenuItems
   });
+
+  // Transform the flat array into categories
+  const menuItems = {
+    drinks: Array.isArray(menuItemsData) ? menuItemsData.filter(item => item.category === 'drinks') : [],
+    desserts: Array.isArray(menuItemsData) ? menuItemsData.filter(item => item.category === 'desserts') : [],
+    snacks: Array.isArray(menuItemsData) ? menuItemsData.filter(item => item.category === 'snacks') : []
+  };
 
   const handleAddItem = async () => {
     if (!newItem.name || !newItem.price) {

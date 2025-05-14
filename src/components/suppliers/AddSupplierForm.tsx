@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -47,7 +46,16 @@ const AddSupplierForm = ({ open, onOpenChange }: AddSupplierFormProps) => {
     setIsSubmitting(true);
     
     try {
-      await createSupplier(values);
+      // Ensure all required fields are provided
+      const supplierData = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+        category: values.category
+      };
+      
+      await createSupplier(supplierData);
       
       toast({
         title: "Supplier created",

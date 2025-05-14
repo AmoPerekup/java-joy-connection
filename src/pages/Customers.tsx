@@ -26,7 +26,7 @@ const Customers = () => {
           </Button>
         </div>
         
-        <CustomerList onAddCustomer={handleAddCustomer} />
+        <CustomerList />
         
         <AddCustomerForm
           open={addCustomerOpen}
