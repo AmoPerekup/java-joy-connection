@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,29 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle, Coffee, Candy, Pizza, Pencil, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-
-// Mock data for menu items by category
-const INITIAL_MENU_ITEMS = {
-  drinks: [
-    { id: 1, name: 'Espresso', price: 3.50, description: 'Strong black coffee', popular: true },
-    { id: 2, name: 'Cappuccino', price: 4.75, description: 'Espresso with steamed milk and foam', popular: true },
-    { id: 3, name: 'Latte', price: 4.50, description: 'Espresso with steamed milk', popular: false },
-    { id: 4, name: 'Americano', price: 3.75, description: 'Espresso with hot water', popular: false },
-  ],
-  desserts: [
-    { id: 5, name: 'Chocolate Cake', price: 5.50, description: 'Rich chocolate cake with ganache', popular: true },
-    { id: 6, name: 'Cheesecake', price: 5.75, description: 'New York style cheesecake', popular: true },
-    { id: 7, name: 'Croissant', price: 3.25, description: 'Buttery, flaky pastry', popular: false },
-  ],
-  snacks: [
-    { id: 8, name: 'Avocado Toast', price: 6.50, description: 'Sourdough bread with avocado spread', popular: false },
-    { id: 9, name: 'Granola Bar', price: 2.75, description: 'Oats, honey, and mixed nuts', popular: true },
-    { id: 10, name: 'Fruit Cup', price: 4.25, description: 'Selection of fresh seasonal fruits', popular: false },
-  ]
-};
+import { getAllMenuItems, createMenuItem, deleteMenuItem, MenuItem } from '@/services/menuItems';
 
 const MenuManagement = () => {
-  const [menuItems, setMenuItems] = useState(INITIAL_MENU_ITEMS);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newItem, setNewItem] = useState({
     name: '',
@@ -41,9 +22,25 @@ const MenuManagement = () => {
     category: 'drinks',
     popular: false
   });
+  
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const { data: menuItems = [], isLoading } = useQuery({
+    queryKey: ['menuItems'],
+    queryFn: getAllMenuItems,
+    select: (data) => {
+      // Transform the flat array into categories
+      const categorized = {
+        drinks: data.filter(item => item.category === 'drinks'),
+        desserts: data.filter(item => item.category === 'desserts'),
+        snacks: data.filter(item => item.category === 'snacks')
+      };
+      return categorized;
+    }
+  });
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     if (!newItem.name || !newItem.price) {
       toast({
         title: "Missing Information",
@@ -53,51 +50,64 @@ const MenuManagement = () => {
       return;
     }
 
-    const newId = Math.max(
-      ...menuItems.drinks.map(item => item.id),
-      ...menuItems.desserts.map(item => item.id),
-      ...menuItems.snacks.map(item => item.id)
-    ) + 1;
+    try {
+      await createMenuItem({
+        name: newItem.name,
+        price: parseFloat(newItem.price),
+        description: newItem.description,
+        category: newItem.category as 'drinks' | 'desserts' | 'snacks',
+        popular: newItem.popular
+      });
 
-    const itemToAdd = {
-      id: newId,
-      name: newItem.name,
-      price: parseFloat(newItem.price),
-      description: newItem.description,
-      popular: newItem.popular
-    };
-
-    setMenuItems(prev => ({
-      ...prev,
-      [newItem.category]: [...prev[newItem.category], itemToAdd]
-    }));
-
-    setNewItem({
-      name: '',
-      price: '',
-      description: '',
-      category: 'drinks',
-      popular: false
-    });
-
-    setIsAddDialogOpen(false);
-    
-    toast({
-      title: "Item Added",
-      description: `${itemToAdd.name} has been added to the menu.`
-    });
+      toast({
+        title: "Item Added",
+        description: `${newItem.name} has been added to the menu.`
+      });
+      
+      // Reset form and close dialog
+      setNewItem({
+        name: '',
+        price: '',
+        description: '',
+        category: 'drinks',
+        popular: false
+      });
+      
+      setIsAddDialogOpen(false);
+      
+      // Refetch menu items
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add menu item. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Error adding menu item:", error);
+    }
   };
 
-  const handleDeleteItem = (id: number, category: 'drinks' | 'desserts' | 'snacks') => {
-    setMenuItems(prev => ({
-      ...prev,
-      [category]: prev[category].filter(item => item.id !== id)
-    }));
-
-    toast({
-      title: "Item Deleted",
-      description: "The menu item has been removed."
-    });
+  const handleDeleteItem = async (id: number | undefined, category: 'drinks' | 'desserts' | 'snacks') => {
+    if (!id) return;
+    
+    try {
+      await deleteMenuItem(id);
+      
+      toast({
+        title: "Item Deleted",
+        description: "The menu item has been removed."
+      });
+      
+      // Refetch menu items
+      queryClient.invalidateQueries({ queryKey: ['menuItems'] });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete menu item. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Error deleting menu item:", error);
+    }
   };
 
   const getCategoryIcon = (category: string) => {
@@ -113,10 +123,30 @@ const MenuManagement = () => {
     }
   };
 
-  const renderMenuItems = (items: any[], category: 'drinks' | 'desserts' | 'snacks') => {
+  const renderMenuItems = (items: MenuItem[], category: 'drinks' | 'desserts' | 'snacks') => {
+    if (isLoading) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">Loading menu items...</p>
+        </div>
+      );
+    }
+    
+    if (!items || items.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground mb-4">No items found in this category</p>
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add Item
+          </Button>
+        </div>
+      );
+    }
+    
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        {items.map(item => (
+        {items.map((item) => (
           <Card key={item.id} className="overflow-hidden">
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between">

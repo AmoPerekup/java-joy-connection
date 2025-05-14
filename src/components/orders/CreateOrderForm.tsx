@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,6 +10,9 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { toast } from '@/hooks/use-toast';
 import { CreditCard, DollarSign } from 'lucide-react';
+import { createOrder } from '@/services/orders';
+import { getAllSuppliers, Supplier } from '@/services/suppliers';
+import { useQuery } from '@tanstack/react-query';
 
 const formSchema = z.object({
   supplier: z.string().min(1, { message: "Please select a supplier" }),
@@ -44,6 +46,13 @@ const CreateOrderForm = ({ open, onOpenChange }: CreateOrderFormProps) => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Fetch suppliers using React Query
+  const { data: suppliers = [], isLoading: isSuppliersLoading } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: getAllSuppliers,
+    enabled: open,
+  });
+  
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,14 +64,18 @@ const CreateOrderForm = ({ open, onOpenChange }: CreateOrderFormProps) => {
     },
   });
 
-  const onSubmit = (values: OrderFormValues) => {
+  const onSubmit = async (values: OrderFormValues) => {
     setIsSubmitting(true);
     
-    // Simulate API call to create order
-    console.log("Creating order:", values);
-    
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await createOrder({
+        supplier_id: parseInt(values.supplier),
+        items: values.items,
+        amount: parseFloat(values.amount),
+        delivery_date: values.deliveryDate,
+        payment_method: values.paymentMethod,
+        status: 'pending',
+      });
       
       toast({
         title: "Order created",
@@ -74,7 +87,16 @@ const CreateOrderForm = ({ open, onOpenChange }: CreateOrderFormProps) => {
       
       // Navigate to the orders page
       navigate("/orders");
-    }, 1500);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -94,15 +116,16 @@ const CreateOrderForm = ({ open, onOpenChange }: CreateOrderFormProps) => {
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
+                    disabled={isSuppliersLoading}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a supplier" />
+                        <SelectValue placeholder={isSuppliersLoading ? "Loading suppliers..." : "Select a supplier"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {SUPPLIERS.map((supplier) => (
-                        <SelectItem key={supplier.id} value={supplier.id.toString()}>
+                      {suppliers.map((supplier) => (
+                        <SelectItem key={supplier.id} value={supplier.id?.toString() || ""}>
                           {supplier.name}
                         </SelectItem>
                       ))}

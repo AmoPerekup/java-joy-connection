@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { toast } from '@/hooks/use-toast';
+import { createSupplier } from '@/services/suppliers';
+import { useQueryClient } from '@tanstack/react-query';
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
@@ -27,6 +29,9 @@ interface AddSupplierFormProps {
 
 const AddSupplierForm = ({ open, onOpenChange }: AddSupplierFormProps) => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+  
   const form = useForm<SupplierFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,22 +43,32 @@ const AddSupplierForm = ({ open, onOpenChange }: AddSupplierFormProps) => {
     },
   });
 
-  const onSubmit = (values: SupplierFormValues) => {
-    // Simulate API call to create supplier
-    console.log("Creating supplier:", values);
+  const onSubmit = async (values: SupplierFormValues) => {
+    setIsSubmitting(true);
     
-    setTimeout(() => {
+    try {
+      await createSupplier(values);
+      
       toast({
         title: "Supplier created",
         description: `${values.name} has been added to your suppliers.`,
       });
       
+      // Invalidate suppliers query to refetch the data
+      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+      
       form.reset();
       onOpenChange(false);
-      
-      // Navigate to the suppliers list
-      navigate("/suppliers");
-    }, 1000);
+    } catch (error) {
+      console.error('Error creating supplier:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create supplier. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -133,8 +148,8 @@ const AddSupplierForm = ({ open, onOpenChange }: AddSupplierFormProps) => {
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">
-                Add Supplier
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Adding..." : "Add Supplier"}
               </Button>
             </div>
           </form>
