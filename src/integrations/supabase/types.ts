@@ -9,7 +9,96 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          name: string
+          phone?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: number | null
+        }
+        Relationships: []
+      }
+      Menu: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          price: number | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id: string
+          price?: number | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          price?: number | null
+          title?: string | null
+        }
+        Relationships: []
+      }
+      Payment: {
+        Row: {
+          created_at: string | null
+          details: string | null
+          id: string
+          method_name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: string | null
+          id: string
+          method_name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: string | null
+          id?: string
+          method_name?: string | null
+        }
+        Relationships: []
+      }
+      Suppliers: {
+        Row: {
+          contact_info: string | null
+          created_at: string | null
+          id: string | null
+          name: string | null
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
