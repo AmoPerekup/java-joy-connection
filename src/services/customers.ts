@@ -1,15 +1,16 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface Customer {
   id?: number;
   name: string;
   email: string;
-  phone: string;
-  joinDate: string;
-  loyaltyPoints: number;
-  preferences?: string[];
-  birthday?: string;
-  address?: string;
+  phone?: string | null;
+  address?: string | null;
+  joindate: string; // Changed from joinDate, matches DB schema
+  loyaltypoints?: number | null; // Changed from loyaltyPoints, matches DB schema and nullability
+  preferences?: any | null; // Changed type to any for JSONB compatibility
+  birthday?: string | null;
   created_at?: string;
 }
 
@@ -24,7 +25,9 @@ export async function getAllCustomers(): Promise<Customer[]> {
     throw error;
   }
   
-  return data || [];
+  // Ensure the returned data matches the Customer interface as much as possible.
+  // Supabase client should handle type mapping based on src/integrations/supabase/types.ts
+  return (data as any[] || []) as Customer[];
 }
 
 export async function getCustomerById(id: number): Promise<Customer | null> {
@@ -39,13 +42,24 @@ export async function getCustomerById(id: number): Promise<Customer | null> {
     throw error;
   }
   
-  return data;
+  return (data as any || null) as Customer | null;
 }
 
 export async function createCustomer(customer: Omit<Customer, 'id' | 'created_at'>): Promise<Customer> {
+  // Ensure the object sent to Supabase has keys matching DB columns
+  const customerDataForDb: any = { ...customer };
+  if (customerDataForDb.loyaltyPoints !== undefined) {
+    customerDataForDb.loyaltypoints = customerDataForDb.loyaltyPoints;
+    delete customerDataForDb.loyaltyPoints;
+  }
+  if (customerDataForDb.joinDate !== undefined) {
+    customerDataForDb.joindate = customerDataForDb.joinDate;
+    delete customerDataForDb.joinDate;
+  }
+
   const { data, error } = await supabase
     .from('customers')
-    .insert([customer])
+    .insert([customerDataForDb])
     .select()
     .single();
     
@@ -54,13 +68,24 @@ export async function createCustomer(customer: Omit<Customer, 'id' | 'created_at
     throw error;
   }
   
-  return data;
+  return (data as any) as Customer;
 }
 
 export async function updateCustomer(id: number, updates: Partial<Customer>): Promise<Customer> {
+  // Ensure the object sent to Supabase has keys matching DB columns
+  const updateDataForDb: any = { ...updates };
+  if (updateDataForDb.loyaltyPoints !== undefined) {
+    updateDataForDb.loyaltypoints = updateDataForDb.loyaltyPoints;
+    delete updateDataForDb.loyaltyPoints;
+  }
+  if (updateDataForDb.joinDate !== undefined) {
+    updateDataForDb.joindate = updateDataForDb.joinDate;
+    delete updateDataForDb.joinDate;
+  }
+  
   const { data, error } = await supabase
     .from('customers')
-    .update(updates)
+    .update(updateDataForDb)
     .eq('id', id)
     .select()
     .single();
@@ -70,7 +95,7 @@ export async function updateCustomer(id: number, updates: Partial<Customer>): Pr
     throw error;
   }
   
-  return data;
+  return (data as any) as Customer;
 }
 
 export async function deleteCustomer(id: number): Promise<void> {
@@ -84,3 +109,4 @@ export async function deleteCustomer(id: number): Promise<void> {
     throw error;
   }
 }
+

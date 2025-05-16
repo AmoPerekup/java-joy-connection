@@ -9,93 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      clients: {
+      customers: {
         Row: {
+          address: string | null
+          birthday: string | null
           created_at: string | null
-          email: string | null
-          id: string
+          email: string
+          id: number
+          joindate: string
+          loyaltypoints: number | null
           name: string
-          phone: number | null
+          phone: string | null
+          preferences: Json | null
         }
         Insert: {
+          address?: string | null
+          birthday?: string | null
           created_at?: string | null
-          email?: string | null
-          id: string
+          email: string
+          id?: number
+          joindate: string
+          loyaltypoints?: number | null
           name: string
-          phone?: number | null
+          phone?: string | null
+          preferences?: Json | null
         }
         Update: {
+          address?: string | null
+          birthday?: string | null
           created_at?: string | null
-          email?: string | null
-          id?: string
+          email?: string
+          id?: number
+          joindate?: string
+          loyaltypoints?: number | null
           name?: string
-          phone?: number | null
+          phone?: string | null
+          preferences?: Json | null
         }
         Relationships: []
       }
-      Menu: {
+      menu_items: {
         Row: {
+          category: string
           created_at: string | null
           description: string | null
-          id: string
-          price: number | null
-          title: string | null
+          id: number
+          name: string
+          popular: boolean | null
+          price: number
         }
         Insert: {
+          category: string
           created_at?: string | null
           description?: string | null
-          id: string
-          price?: number | null
-          title?: string | null
+          id?: number
+          name: string
+          popular?: boolean | null
+          price: number
         }
         Update: {
+          category?: string
           created_at?: string | null
           description?: string | null
-          id?: string
-          price?: number | null
-          title?: string | null
-        }
-        Relationships: []
-      }
-      Payment: {
-        Row: {
-          created_at: string | null
-          details: string | null
-          id: string
-          method_name: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          details?: string | null
-          id: string
-          method_name?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          details?: string | null
-          id?: string
-          method_name?: string | null
-        }
-        Relationships: []
-      }
-      Suppliers: {
-        Row: {
-          contact_info: string | null
-          created_at: string | null
-          id: string | null
-          name: string | null
-        }
-        Insert: {
-          contact_info?: string | null
-          created_at?: string | null
-          id?: string | null
-          name?: string | null
-        }
-        Update: {
-          contact_info?: string | null
-          created_at?: string | null
-          id?: string | null
-          name?: string | null
+          id?: number
+          name?: string
+          popular?: boolean | null
+          price?: number
         }
         Relationships: []
       }
